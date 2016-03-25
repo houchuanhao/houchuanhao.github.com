@@ -1,0 +1,57 @@
+@charest "utf-8";
+*{
+    margin: 0px;
+    border: 1px solid #999;
+}
+p{
+    border: none;
+}
+body{
+    border:none;    
+    margin: 0px;
+    padding: 20px;  
+}
+div{
+    padding: 20px;
+    margin: 0px;
+}
+#main{
+    overflow: auto;
+    background-color: #eee;
+}
+#left_div{
+    float: left;
+    width: 160px;
+    background-color: white;
+}
+#right_div{
+    float: right;
+    width: 80px;
+    background-color: white;
+}
+#middle_div{
+    background-color: white;
+    margin-left: 220px;
+    margin-right: 140px;
+}
+#team_logo{
+    float: left;
+    padding: 0px;
+    width: 80px;
+    height: 80px;
+    background-image: url(/img/8080.jpg);
+    background-repeat: no-repeat;
+}
+#name{
+    border: none;
+    float: right;
+    padding: 0px;
+}
+.private_logo{
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+}
+#private_logo4{
+    margin-bottom: 0px;
+}
