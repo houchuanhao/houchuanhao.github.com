@@ -1,32 +1,233 @@
 ﻿<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-    </head>
-    <body>
-        <div id="main">
-            <div id="left_div">
-                <div id="team_logo"></div>
-                <div id="name"><a href="taowaimai/index.html">Sprite</a></div>
-            </div>
-            <div id="right_div">
-                <img src="img/psb1.jpg"  class="private_logo"/>
-                <img src="img/psb2.jpg"  class="private_logo"/>
-                <img src="img/psb3.jpg"  class="private_logo"/>
-                <img src="img/psb4.jpg"  id="private_logo4" class="private_logo"/>
-            </div>
-            <div id="middle_div">
-                <p>介绍</br>
-                    姓名： 侯传浩	    性别：男 	  年龄：21 <br>
-                    院校：内蒙古大学计算机学院	  专业: 软件工程<br>
-                    电话： 158-4817-5809<br>
-                    邮箱： houchuanhao@imudges.com<br>
-                    github： houchuanhao<br>
-                    博客:  http://blog.csdn.net/sela0708<br>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-                </p>
-            </div>
-        </div>
-    </body>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Babylon Template</title>
+
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+    <script src="https://preview.babylonjs.com/cannon.js"></script>
+    <script src="https://preview.babylonjs.com/Oimo.js"></script>
+    <script src="https://preview.babylonjs.com/gltf_validator.js"></script>
+    <script src="https://preview.babylonjs.com/earcut.min.js"></script>
+    <!---
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    --->
+    <script src="js/babylon.js"></script>
+    <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+    <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+    <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+    <!---
+    <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+    --->
+    <script src="js/babylon.gui.min.js"></script>
+</head>
+
+<body>
+
+<canvas id="renderCanvas" touch-action="none"></canvas> //touch-action="none" for best results from PEP
+
+<script>
+
+    function findMin(a){
+        var p=0;
+        for(var j=0;j<a.length;j++){
+            if(a[j]<a[p])
+                p=j;
+        }
+        return p;
+    }
+    function djstl(){
+        var a=[
+            [0,50,10,20,40],
+            [50,0,10,999,999],
+            [10,10,0,999,999],
+            [20,999,999,0,10],
+            [40,999,999,10,0]
+        ];
+        var now=0;
+        var dist=a[now];
+        while(true){
+            var p=now;
+            //  for(var j=0;)
+        }
+
+    }
+
+    // a is an array begin from 1
+    function createMaxTopHeap(a){
+        //小的下沉
+        for(var j=(a.length-1)/2;j>=1;j--){
+            var max;
+            if(j*2+1<a.length){
+                max=a[j*2]>a[j*2+1]?j*2:j*2+1;
+            }else{
+                max=j*2;
+            }
+            if(a[j]<a[max])
+                swap(a,j,max);
+        }
+    }
+    function adjustDown(a,num){
+        var j=1;
+        while(true){
+            if(j*2>=num)
+                return;
+            var max;
+            if(j*2+1<num){
+                max=a[j*2]>a[j*2+1]?j*2:j*2+1;
+            }else{
+                max=j*2;
+            }
+            if(a[j]<a[max]){
+                swap(a,j,max);
+                j=max;
+            }
+            else return;
+        }
+    }
+    function swap(a,m,n){
+        var s=a[m];
+        a[m]=a[n];
+        a[n]=s;
+    }
+    var a=[0,8,5,2,3,6,7,4,9];
+
+    function heapSort(a){
+        createMaxTopHeap(a);
+        console.log(a);
+        for(var i=1;i<a.length;i++){
+            swap(a,1,a.length-i)
+            console.log("交换后");
+            console.log(a);
+            adjustDown(a,a.length-i);
+            console.log("向下调整后");
+            console.log(a);
+            console.log("---------------------");
+        }
+        console.log(a);
+    }
+    heapSort(a);
+
+
+    //获取画布
+    var canvas = document.getElementById("renderCanvas"); // Get the canvas element
+    //创建引擎
+    var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+
+    /******* Add the create scene function ******/
+    var createScene = function () {
+
+        // This creates a basic Babylon Scene object (non-mesh)
+        var scene = new BABYLON.Scene(engine);
+
+        // This creates and positions a free camera (non-mesh)
+        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+
+        // This targets the camera to scene origin
+        camera.setTarget(BABYLON.Vector3.Zero());
+
+        // This attaches the camera to the canvas
+        camera.attachControl(canvas, true);
+
+        // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+
+        // Default intensity is 1. Let's dim the light a small amount
+        light.intensity = 0.7;
+
+        // Our built-in 'sphere' shape. Params: name, subdivs, size, scene
+        var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
+
+        // Move the sphere upward 1/2 its height
+        sphere.position.y = 1;
+
+        // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
+        var ground = BABYLON.Mesh.CreateGround("ground1", 6, 6, 2, scene);
+
+        // GUI
+        //全景GUI,静态的，不随相机变换而移动
+        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI", true);
+        //  BABYLON.GUI.AdvancedDynamicTexture// it can also be changed on the go:
+        //foreground:前景，突出的地方，是否将UI放到最前面
+        //  advancedTexture.isForeground = false;
+        var image=new BABYLON.GUI.Image("myImage","img/34.png");
+        image.width=0.2;
+        image.height=0.2;
+
+        advancedTexture.addControl(image);
+        var button1 = BABYLON.GUI.Button.CreateSimpleButton("but1", "Click Me");
+        button1.width = "150px"
+        button1.height = "40px";
+        button1.color = "white";
+        button1.cornerRadius = 20;
+        button1.background = "green";
+        button1.onPointerUpObservable.add(function() {
+            alert("you did it!");
+        });
+        advancedTexture.addControl(button1);
+
+
+
+        //
+        // GUI
+        var plane = BABYLON.Mesh.CreatePlane("plane", 2);
+        plane.parent = sphere;
+        plane.position.y = 2;
+
+
+        //将UI加到Mesh上
+        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(plane,1024,1024);
+        var button1 = BABYLON.GUI.Button.CreateSimpleButton("but1", "Click Me");
+        button1.width = 1;
+        button1.height = 0.4;
+        button1.color = "white";
+        button1.fontSize = 50;
+        button1.background = "green";
+        button1.onPointerUpObservable.add(function() {
+            alert("you did it!");
+        });
+        advancedTexture.addControl(button1);
+        return scene;
+
+    };
+    /******* End of the create scene function ******/
+
+    var scene = createScene(); //Call the createScene function
+
+
+
+    // Register a render loop to repeatedly render the scene
+    engine.runRenderLoop(function () {
+        scene.render();
+    });
+
+    // Watch for browser/canvas resize events
+    window.addEventListener("resize", function () {
+        engine.resize();
+    });
+</script>
+
+</body>
+
 </html>
