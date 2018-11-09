@@ -1,185 +1,28 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Babylon Template</title>
-
+    <title>BabylonJS - Espilit demo</title>
+    <script src="scripts/hand.minified-1.2.js"></script>
+    <script src="scripts/babylon.js"></script>
+    <script src="scripts/main.js"></script>
     <style>
         html, body {
-            overflow: hidden;
             width: 100%;
             height: 100%;
-            margin: 0;
             padding: 0;
+            margin: 0;
+            overflow: hidden;
         }
 
         #renderCanvas {
             width: 100%;
             height: 100%;
             touch-action: none;
+            -ms-touch-action: none;
         }
     </style>
-
-    <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
-    <script src="https://preview.babylonjs.com/cannon.js"></script>
-    <script src="https://preview.babylonjs.com/Oimo.js"></script>
-    <script src="https://preview.babylonjs.com/gltf_validator.js"></script>
-    <script src="https://preview.babylonjs.com/earcut.min.js"></script>
-    <!---
-    <script src="https://preview.babylonjs.com/babylon.js"></script>
-    --->
-    <script src="js/babylon.js"></script>
-    <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
-    <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
-    <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
-    <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
-    <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
-    <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
-    <!---
-    <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
-    --->
-    <script src="js/babylon.gui.min.js"></script>
 </head>
-
 <body>
-<canvas id="renderCanvas"></canvas>
-<script>
-    var canvas = document.getElementById("renderCanvas");
-
-    var createScene = function () {
-
-        // This creates a basic Babylon Scene object (non-mesh)
-        var scene = new BABYLON.Scene(engine);
-
-        /********** FOLLOW CAMERA EXAMPLE **************************/
-
-            // This creates and initially positions a follow camera
-        var camera = new BABYLON.FollowCamera("FollowCam", new BABYLON.Vector3(0, 10, -10), scene);
-
-        //The goal distance of camera from target
-        camera.radius = 30;
-
-        // The goal height of camera above local origin (centre) of target
-        camera.heightOffset = 10;
-
-        // The goal rotation of camera around local origin (centre) of target in x y plane
-        camera.rotationOffset = 0;
-
-        //Acceleration of camera in moving from current to goal position
-        camera.cameraAcceleration = 0.005
-
-        //The speed at which acceleration is halted
-        camera.maxCameraSpeed = 10
-
-        //camera.target is set after the target's creation
-
-        // This attaches the camera to the canvas
-        camera.attachControl(canvas, true);
-
-        /**************************************************************/
-
-        // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-        var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-
-        //Material
-        var mat = new BABYLON.StandardMaterial("mat1", scene);
-        mat.alpha = 1.0;
-        mat.diffuseColor = new BABYLON.Color3(0.5, 0.5, 1.0);
-        var texture = new BABYLON.Texture("http://jerome.bousquie.fr/BJS/images/spriteAtlas.png", scene);
-        mat.diffuseTexture = texture;
-
-        //Different face for each side of box to show camera rotation
-        var hSpriteNb =  6;  // 6 sprites per row
-        var vSpriteNb =  4;  // 4 sprite rows
-
-        var faceUV = new Array(6);
-
-        for (var i = 0; i < 6; i++) {
-            faceUV[i] = new BABYLON.Vector4(i/hSpriteNb, 0, (i+1)/hSpriteNb, 1 / vSpriteNb);
-        }
-
-        // Shape to follow
-        var box = BABYLON.MeshBuilder.CreateBox("box", {size: 2, faceUV: faceUV }, scene);
-        box.position = new BABYLON.Vector3(20, 0, 10);
-        box.material = mat;
-
-        //create solid particle system of stationery grey boxes to show movement of box and camera
-        var boxesSPS = new BABYLON.SolidParticleSystem("boxes", scene, {updatable: false});
-
-        //function to position of grey boxes
-        var set_boxes = function(particle, i, s) {
-            particle.position = new BABYLON.Vector3(-50 + Math.random()*100, -50 + Math.random()*100, -50 + Math.random()*100);
-        }
-
-        //add 400 boxes
-        boxesSPS.addShape(box, 400, {positionFunction:set_boxes});
-        var boxes = boxesSPS.buildMesh(); // mesh of boxes
-
-        /*****************SET TARGET FOR CAMERA************************/
-        camera.lockedTarget = box;
-        /**************************************************************/
-
-
-        //box movement variables
-        var alpha = 0;
-        var orbit_radius = 20
-
-
-        //Move the box to see that the camera follows it
-        scene.registerBeforeRender(function () {
-            alpha +=0.01;
-            // box.position.x = orbit_radius*Math.cos(alpha);
-            // box.position.y = orbit_radius*Math.sin(alpha);
-            // box.position.z = 10*Math.sin(2*alpha);
-
-            // box.rotation.x=Math.PI*Math.sin(2*alpha);
-            // box.rotation.y=Math.PI*Math.sin(2*alpha);
-            // box.rotation.z=Math.PI*Math.sin(2*alpha);
-            //change the viewing angle of the camera as it follows the box
-            camera.rotationOffset = (18*alpha)%360;
-        });
-
-
-        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-        var rect1 = new BABYLON.GUI.Rectangle();
-        rect1.width = 0.2;
-        rect1.height = "40px";
-        rect1.cornerRadius = 20;
-        rect1.color = "Orange";
-        rect1.thickness = 4;
-        rect1.background = "green";
-        advancedTexture.addControl(rect1);
-
-
-        var label = new BABYLON.GUI.TextBlock();
-        label.text = "Sphere";
-        rect1.addControl(label);
-
-        rect1.linkWithMesh(box);
-       // rect1.linkOffsetY = -50;
-
-
-        return scene;
-
-    };
-
-    var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-    var scene = createScene();
-
-    engine.runRenderLoop(function () {
-        if (scene) {
-            scene.render();
-        }
-    });
-
-    // Resize
-    window.addEventListener("resize", function () {
-        engine.resize();
-    });
-</script>
+    <canvas id="renderCanvas"></canvas>
 </body>
-
 </html>
